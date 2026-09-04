@@ -1,512 +1,135 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const StudioApp());
-}
+void main() => runApp(const StudioApp());
 
 class StudioApp extends StatelessWidget {
   const StudioApp({super.key});
-
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'AI YouTube Studio',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.deepPurple,
-      ),
-      home: const HomePage(),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'AI YouTube Studio — Phase 9.3',
+    theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.deepPurple),
+    home: const HomePage(),
+  );
 }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final topicController = TextEditingController();
-
+  final topic = TextEditingController();
   String videoType = 'short';
-  String aspectRatio = '9:16';
-  String privacy = 'private';
+  String aspect = '9:16';
+  String style = 'Cinematic 3D';
   String status = 'Ready';
   bool busy = false;
+  Map<String, dynamic>? project;
 
-  Map<String, dynamic>? story;
+  @override
+  void dispose() { topic.dispose(); super.dispose(); }
 
-  List<Map<String, String>> _makeStory(String topic) {
-    final t = topic.trim();
-
-    if (t.toLowerCase().contains('ganesha') ||
-        t.contains('गणेश') ||
-        t.contains('गणपति')) {
-      return [
-        {
-          'title': 'एक छोटी सी प्रार्थना',
-          'narration':
-              'एक छोटे से गाँव में आरव नाम का बच्चा हर सुबह भगवान गणेश की पूजा करता था। एक दिन उसने मन से प्रार्थना की कि उसके परिवार की परेशानी दूर हो जाए।',
-          'dialogue':
-              'आरव: हे गणेश जी, मैं अपने लिए कुछ नहीं माँगता। बस मेरे परिवार को खुश रखिए।',
-          'visual':
-              'सुबह का भारतीय गाँव, छोटा मंदिर, गणेश जी की सुंदर मूर्ति, दीपक और फूल, cinematic 3D animation',
-          'camera': 'slow push-in',
-          'sfx': 'temple bell, soft devotional music',
-        },
-        {
-          'title': 'मुश्किल की घड़ी',
-          'narration':
-              'उसी दिन अचानक तेज बारिश शुरू हो गई। गाँव के कई घरों में पानी भरने लगा। आरव ने डरने के बजाय लोगों की मदद करने का फैसला किया।',
-          'dialogue':
-              'आरव: अगर हम सब मिलकर काम करें तो कोई भी मुश्किल बड़ी नहीं है।',
-          'visual':
-              'तेज बारिश में भारतीय गाँव, लोग परेशान, बच्चा लोगों की मदद करता हुआ, dramatic cinematic lighting',
-          'camera': 'tracking shot',
-          'sfx': 'heavy rain, thunder',
-        },
-        {
-          'title': 'सबने मिलकर मदद की',
-          'narration':
-              'आरव की बात सुनकर गाँव के लोग एक साथ आ गए। किसी ने बुजुर्गों को सुरक्षित जगह पहुँचाया और किसी ने बच्चों को घरों से बाहर निकाला।',
-          'dialogue':
-              'गाँव वाला: आरव, तुमने हमें याद दिलाया कि सच्ची भक्ति सिर्फ पूजा नहीं, बल्कि इंसान की मदद करना भी है।',
-          'visual':
-              'गाँव के लोग एक-दूसरे की मदद करते हुए, परिवार सुरक्षित स्थान पर, emotional cinematic scene',
-          'camera': 'wide shot then slow zoom',
-          'sfx': 'hopeful music',
-        },
-        {
-          'title': 'चमत्कार जैसा पल',
-          'narration':
-              'कुछ घंटों बाद बारिश रुक गई। बादलों के बीच से सूरज की किरणें निकलीं और मंदिर के गणेश जी पर सुनहरी रोशनी पड़ने लगी।',
-          'dialogue':
-              'आरव: गणेश जी ने हमें रास्ता दिखाया। हमें हमेशा अच्छे काम करते रहना चाहिए।',
-          'visual':
-              'बारिश के बाद चमकता गाँव, मंदिर पर सुनहरी सूर्य किरणें, गणेश प्रतिमा, magical cinematic atmosphere',
-          'camera': 'slow upward tilt',
-          'sfx': 'soft bells, magical chime',
-        },
-        {
-          'title': 'कहानी की सीख',
-          'narration':
-              'उस दिन पूरे गाँव ने समझा कि विश्वास तभी सुंदर बनता है जब उसके साथ अच्छे कर्म भी हों। आरव की छोटी सी प्रार्थना ने पूरे गाँव को एक परिवार बना दिया।',
-          'dialogue':
-              'आरव: सच्ची शक्ति वही है जिससे किसी दूसरे के चेहरे पर मुस्कान आए।',
-          'visual':
-              'खुशहाल भारतीय गाँव, मंदिर में दीपक, लोग मुस्कुराते हुए, beautiful cinematic ending',
-          'camera': 'slow zoom out',
-          'sfx': 'devotional music, temple bell',
-        },
-      ];
-    }
-
-    if (t.contains('बंदर') || t.contains('मगरमच्छ')) {
-      return [
-        {
-          'title': 'जामुन का पेड़',
-          'narration':
-              'एक नदी के किनारे एक पेड़ पर एक चतुर बंदर रहता था। पेड़ पर मीठे जामुन लगते थे। एक दिन नदी से एक मगरमच्छ वहाँ आया।',
-          'dialogue':
-              'बंदर: दोस्त, तुम भी जामुन खाना चाहोगे? मेरे पास बहुत सारे हैं।',
-          'visual':
-              'नदी किनारे जामुन का पेड़, पेड़ पर चतुर बंदर और पानी में मगरमच्छ, colorful 3D animation',
-          'camera': 'slow pan',
-          'sfx': 'river water, birds',
-        },
-        {
-          'title': 'नई दोस्ती',
-          'narration':
-              'मगरमच्छ ने जामुन खाए और दोनों में दोस्ती हो गई। बंदर रोज उसे मीठे जामुन देने लगा।',
-          'dialogue':
-              'मगरमच्छ: दोस्त, इतने मीठे जामुन मैंने कभी नहीं खाए। तुम्हारा बहुत धन्यवाद।',
-          'visual':
-              'बंदर मगरमच्छ को जामुन देता हुआ, नदी का सुंदर वातावरण, warm cinematic lighting',
-          'camera': 'gentle tracking',
-          'sfx': 'light cheerful music',
-        },
-        {
-          'title': 'मगरमच्छ की पत्नी',
-          'narration':
-              'लेकिन एक दिन मगरमच्छ की पत्नी ने कहा कि जो बंदर रोज इतने मीठे जामुन खाता है, उसका दिल कितना मीठा होगा।',
-          'dialogue':
-              'पत्नी: मुझे उस बंदर का दिल चाहिए। किसी तरह उसे यहाँ लेकर आओ।',
-          'visual':
-              'नदी का किनारा, मगरमच्छ और उसकी पत्नी गंभीर बातचीत करते हुए, dramatic mood',
-          'camera': 'slow zoom in',
-          'sfx': 'dark suspense music',
-        },
-        {
-          'title': 'बंदर की चालाकी',
-          'narration':
-              'मगरमच्छ बंदर को अपनी पीठ पर बैठाकर नदी पार ले जाने लगा। बीच नदी में उसने असली बात बता दी।',
-          'dialogue':
-              'मगरमच्छ: दोस्त, मुझे तुम्हें एक बात बतानी है। मेरी पत्नी तुम्हारा दिल चाहती है।',
-          'visual':
-              'नदी के बीच मगरमच्छ की पीठ पर बैठा चिंतित बंदर, dramatic water scene',
-          'camera': 'close-up then shake',
-          'sfx': 'water splash, suspense',
-        },
-        {
-          'title': 'बंदर बच गया',
-          'narration':
-              'बंदर घबराया नहीं। उसने तुरंत कहा कि उसका दिल तो पेड़ पर ही रह गया है। मगरमच्छ उसे वापस किनारे ले आया और बंदर तेजी से पेड़ पर चढ़ गया।',
-          'dialogue':
-              'बंदर: दोस्ती में विश्वासघात करने वाले पर दोबारा भरोसा नहीं किया जा सकता।',
-          'visual':
-              'बंदर तेजी से पेड़ पर चढ़ता हुआ, मगरमच्छ नदी में पछताता हुआ, cinematic ending',
-          'camera': 'fast tracking then slow zoom out',
-          'sfx': 'whoosh, dramatic ending',
-        },
-      ];
-    }
-
-    return [
-      {
-        'title': 'शुरुआत',
-        'narration':
-            '$t की कहानी एक छोटे से गाँव से शुरू होती है। वहाँ एक साधारण इंसान रहता था, लेकिन उसके सपने बहुत बड़े थे।',
-        'dialogue':
-            'नायक: मुझे पता है रास्ता मुश्किल है, लेकिन मैं हार नहीं मानूँगा।',
-        'visual':
-            'सुंदर भारतीय गाँव, मुख्य पात्र अकेला खड़ा, cinematic realistic 3D animation',
-        'camera': 'slow establishing shot',
-        'sfx': 'soft cinematic music',
-      },
-      {
-        'title': 'पहली मुश्किल',
-        'narration':
-            'अचानक उसके सामने एक ऐसी समस्या आई जिसने उसकी पूरी जिंदगी बदल दी। लोग उसे रोकना चाहते थे, लेकिन उसने हिम्मत नहीं छोड़ी।',
-        'dialogue':
-            'दोस्त: क्या तुम्हें सच में लगता है कि तुम यह कर पाओगे?',
-        'visual':
-            'मुख्य पात्र के सामने बड़ी समस्या, चिंतित दोस्त, dramatic cinematic lighting',
-        'camera': 'slow push-in',
-        'sfx': 'dramatic hit',
-      },
-      {
-        'title': 'बड़ा फैसला',
-        'narration':
-            'कुछ देर सोचने के बाद उसने एक बड़ा फैसला लिया। उसने डर के बजाय अपने विश्वास को चुना।',
-        'dialogue':
-            'नायक: डर मुझे रोक सकता है, लेकिन मेरा हौसला मुझे आगे ले जाएगा।',
-        'visual':
-            'मुख्य पात्र दृढ़ निश्चय के साथ आगे बढ़ता हुआ, sunset background',
-        'camera': 'tracking shot',
-        'sfx': 'rising inspirational music',
-      },
-      {
-        'title': 'सच्चाई सामने आई',
-        'narration':
-            'जब सबको लगा कि वह हार चुका है, तभी उसे एक ऐसा सुराग मिला जिसने पूरी कहानी बदल दी।',
-        'dialogue':
-            'नायक: अब मुझे समझ आया कि असली समस्या कहाँ थी।',
-        'visual':
-            'रहस्यमय सुराग मिलने का cinematic दृश्य, close-up, dramatic shadows',
-        'camera': 'slow zoom in',
-        'sfx': 'mystery sound, thunder',
-      },
-      {
-        'title': 'अंत और सीख',
-        'narration':
-            'आखिरकार उसकी मेहनत रंग लाई। उसने समस्या को हल किया और सबको एक महत्वपूर्ण सीख मिली कि सच्ची जीत वही है जिसमें इंसान अपने डर पर विजय पा ले।',
-        'dialogue':
-            'नायक: मुश्किलें हमारी परीक्षा लेती हैं, लेकिन हिम्मत हमें जीतना सिखाती है।',
-        'visual':
-            'खुशहाल लोग, मुख्य पात्र मुस्कुराता हुआ, सुंदर cinematic ending',
-        'camera': 'slow zoom out',
-        'sfx': 'emotional victory music',
-      },
+  Map<String, dynamic> makeStory(String raw) {
+    final t = raw.trim().isEmpty ? 'एक प्रेरणादायक कहानी' : raw.trim();
+    final long = videoType == 'long';
+    final scenes = <Map<String, String>>[
+      {'n':'1','title':'शुरुआत','narration':'$t की कहानी एक छोटे से गाँव से शुरू होती है। वहाँ एक साधारण इंसान अपने बड़े सपने को पूरा करने के लिए हर दिन मेहनत करता था।','dialogue':'नायक: “मैं हार नहीं मानूँगा। चाहे रास्ता कितना भी मुश्किल क्यों न हो।”','characters':'नायक, गाँव के लोग','visual':'cinematic realistic 3D animation, Indian village, main character, sunrise, expressive face, consistent character design','camera':'slow cinematic push-in','sfx':'soft morning ambience, birds'},
+      {'n':'2','title':'समस्या','narration':'अचानक उसके सामने एक बड़ी परेशानी आ गई। लोग उसे समझाने लगे कि यह काम उसके बस की बात नहीं है, लेकिन उसने उम्मीद नहीं छोड़ी।','dialogue':'मित्र: “तुम अकेले यह कैसे करोगे?”\nनायक: “कोशिश करने वाला कभी सच में अकेला नहीं होता।”','characters':'नायक, मित्र','visual':'cinematic 3D scene, worried friend talking to hero, emotional expressions, Indian environment, dramatic lighting','camera':'medium shot with slow side tracking','sfx':'subtle tension music'},
+      {'n':'3','title':'बड़ा मोड़','narration':'जब सब कुछ खत्म होता दिखाई दे रहा था, तभी एक अनपेक्षित मौका उसके सामने आया। अब फैसला उसे खुद करना था।','dialogue':'नायक: “शायद यही वह मौका है जिसका मैं इंतज़ार कर रहा था।”\nबुज़ुर्ग: “डर को अपने फैसले पर हावी मत होने देना।”','characters':'नायक, बुज़ुर्ग','visual':'dramatic cinematic 3D animation, hero meeting wise elder, warm lantern light, emotional close-up','camera':'slow zoom toward faces','sfx':'deep cinematic hit, light wind'},
+      {'n':'4','title':'संघर्ष','narration':'नायक ने पूरी ताकत से कोशिश की। रास्ते में कई मुश्किलें आईं, लेकिन हर मुश्किल ने उसे और मजबूत बना दिया।','dialogue':'नायक: “गिरना मेरी हार नहीं है। उठकर फिर चलना ही मेरी असली जीत है।”\nमित्र: “अब मुझे तुम पर पूरा भरोसा है।”','characters':'नायक, मित्र','visual':'epic cinematic 3D animation, hero overcoming obstacles, dust, dramatic sky, strong emotions, consistent characters','camera':'tracking shot followed by slow push-in','sfx':'rising cinematic music, footsteps'},
+      {'n':'5','title':'जीत और संदेश','narration':'आखिरकार उसकी मेहनत रंग लाई। उसने अपनी मंज़िल हासिल की और पूरे गाँव को एक सीख दी—सच्ची लगन और हिम्मत के सामने मुश्किलें छोटी पड़ जाती हैं।','dialogue':'नायक: “अगर दिल में विश्वास हो, तो कोई भी सपना असंभव नहीं।”\nमित्र: “आज तुमने हम सबको उम्मीद करना सिखा दिया।”','characters':'नायक, मित्र, गाँव के लोग','visual':'beautiful cinematic 3D village celebration, happy characters, golden sunset, emotional ending, consistent character design','camera':'slow wide pull-back','sfx':'uplifting music, crowd ambience'},
     ];
+    if (long) {
+      scenes.addAll([
+        {'n':'6','title':'नई चुनौती','narration':'सफलता के बाद एक नई चुनौती सामने आई। इस बार उसे अपने साथ दूसरों को भी आगे बढ़ाना था।','dialogue':'मित्र: “अब आगे क्या?”\nनायक: “अब मेरी जीत सिर्फ मेरी नहीं होगी।”','characters':'नायक, मित्र','visual':'cinematic 3D village, heroes planning together, detailed expressions','camera':'slow orbit shot','sfx':'hopeful music'},
+        {'n':'7','title':'साथ','narration':'उसने लोगों को साथ लिया और सभी ने मिलकर मुश्किल रास्ते को आसान बनाना शुरू किया।','dialogue':'गाँववाला: “हम भी तुम्हारे साथ हैं।”\nनायक: “तो फिर यह काम जरूर पूरा होगा।”','characters':'नायक, गाँववाले','visual':'group of Indian villagers working together, cinematic 3D, warm light','camera':'wide tracking shot','sfx':'work ambience'},
+        {'n':'8','title':'सबसे कठिन पल','narration':'सबसे कठिन समय में एक गलती से पूरी मेहनत खतरे में पड़ गई।','dialogue':'नायक: “गलती हुई है, लेकिन अभी सब खत्म नहीं हुआ।”','characters':'नायक','visual':'dramatic close-up, worried hero, stormy cinematic background','camera':'subtle handheld shake','sfx':'thunder, dramatic impact'},
+        {'n':'9','title':'समाधान','narration':'नायक ने घबराने के बजाय शांत दिमाग से समाधान खोजा और सबने मिलकर समस्या को ठीक कर दिया।','dialogue':'मित्र: “हमने कर दिखाया!”\nनायक: “क्योंकि हमने साथ मिलकर कोशिश की।”','characters':'नायक, मित्र, गाँववाले','visual':'victory moment, cinematic 3D, joyful faces, golden light','camera':'slow crane-up','sfx':'victory music'},
+        {'n':'10','title':'अंतिम संदेश','narration':'उस दिन सबने समझा कि असली सफलता अकेले आगे बढ़ने में नहीं, बल्कि दूसरों को साथ लेकर आगे बढ़ने में है।','dialogue':'नायक: “याद रखो—हिम्मत, मेहनत और साथ हो तो कोई रास्ता बंद नहीं होता।”','characters':'नायक, सभी पात्र','visual':'epic sunset ending, Indian village, all characters together, cinematic 3D','camera':'slow cinematic pull-back','sfx':'emotional ending music'},
+      ]);
+    }
+    return {'title':t,'description':'$t पर तैयार हिंदी कहानी, narration और पात्रों के dialogues.','scenes':scenes};
   }
 
   void createStory() {
-    final topic = topicController.text.trim();
-
-    if (topic.isEmpty) {
-      setState(() => status = 'पहले Story / Topic लिखिए');
-      return;
-    }
-
-    setState(() {
-      busy = true;
-      status = 'Creating story + dialogues...';
-    });
-
-    // तुरंत local generation — कोई backend इंतजार नहीं।
-    final scenes = _makeStory(topic);
-
-    final result = {
-      'title': topic,
-      'description':
-          '$topic की पूरी Hindi YouTube कहानी — narration और dialogues के साथ।',
-      'scenes': scenes,
-    };
-
-    setState(() {
-      story = result;
-      busy = false;
-      status = 'Story + Dialogues ready';
+    if (busy) return;
+    if (topic.text.trim().isEmpty) { setState(() => status='पहले Story / Topic लिखें'); return; }
+    setState(() { busy=true; status='कहानी और dialogues तैयार हो रहे हैं...'; });
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (!mounted) return;
+      setState(() { project=makeStory(topic.text); busy=false; status='Story + Dialogues ready'; });
     });
   }
 
-  void simpleAction(String text) {
-    if (story == null) {
-      setState(() => status = 'पहले AI Story बनाइए');
-      return;
-    }
-
-    setState(() => status = text);
+  void feature(String text) {
+    setState(() => status = project == null ? 'पहले कहानी बनाइए' : text);
   }
 
   @override
   Widget build(BuildContext context) {
-    final scenes =
-        (story?['scenes'] as List?) ?? <Map<String, String>>[];
-
+    final scenes = (project?['scenes'] as List?) ?? const [];
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AI YouTube Studio — Phase 9.2'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          TextField(
-            controller: topicController,
-            decoration: const InputDecoration(
-              labelText: 'Story / Topic',
-              hintText: 'जैसे: Jai Ganesha',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          DropdownButtonFormField<String>(
-            value: videoType,
-            decoration: const InputDecoration(
-              labelText: 'Video type',
-              border: OutlineInputBorder(),
-            ),
-            items: const [
-              DropdownMenuItem(
-                value: 'short',
-                child: Text('YouTube Short'),
-              ),
-              DropdownMenuItem(
-                value: 'long',
-                child: Text('Long Video'),
-              ),
-            ],
-            onChanged: busy
-                ? null
-                : (String? value) {
-                    if (value != null) {
-                      setState(() => videoType = value);
-                    }
-                  },
-          ),
-
-          const SizedBox(height: 12),
-
-          DropdownButtonFormField<String>(
-            value: aspectRatio,
-            decoration: const InputDecoration(
-              labelText: 'Aspect ratio',
-              border: OutlineInputBorder(),
-            ),
-            items: const [
-              DropdownMenuItem(
-                value: '9:16',
-                child: Text('9:16 — Shorts'),
-              ),
-              DropdownMenuItem(
-                value: '16:9',
-                child: Text('16:9 — YouTube'),
-              ),
-            ],
-            onChanged: busy
-                ? null
-                : (String? value) {
-                    if (value != null) {
-                      setState(() => aspectRatio = value);
-                    }
-                  },
-          ),
-
-          const SizedBox(height: 12),
-
-          DropdownButtonFormField<String>(
-            value: privacy,
-            decoration: const InputDecoration(
-              labelText: 'YouTube privacy',
-              border: OutlineInputBorder(),
-            ),
-            items: const [
-              DropdownMenuItem(
-                value: 'private',
-                child: Text('Private'),
-              ),
-              DropdownMenuItem(
-                value: 'unlisted',
-                child: Text('Unlisted'),
-              ),
-              DropdownMenuItem(
-                value: 'public',
-                child: Text('Public'),
-              ),
-            ],
-            onChanged: busy
-                ? null
-                : (String? value) {
-                    if (value != null) {
-                      setState(() => privacy = value);
-                    }
-                  },
-          ),
-
-          const SizedBox(height: 14),
-
-          SizedBox(
-            height: 52,
-            child: FilledButton(
-              onPressed: busy ? null : createStory,
-              child: const Text(
-                '1. Create AI Story + Dialogues',
-                style: TextStyle(fontSize: 17),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          FilledButton(
-            onPressed: busy
-                ? null
-                : () => simpleAction('Images + Hindi Voice — ready for AI backend'),
-            child: const Text('2. Generate Images + Hindi Voice'),
-          ),
-
-          FilledButton(
-            onPressed: busy
-                ? null
-                : () => simpleAction('AI Thumbnail — ready'),
-            child: const Text('3. Create AI Thumbnail'),
-          ),
-
-          FilledButton(
-            onPressed: busy
-                ? null
-                : () => simpleAction('Final video render — ready'),
-            child: const Text('4. Render Final Video'),
-          ),
-
-          FilledButton(
-            onPressed: busy
-                ? null
-                : () => simpleAction('Complete video pipeline — ready'),
-            child: const Text('⚡ One-Click: Create Complete Video'),
-          ),
-
-          FilledButton(
-            onPressed: busy
-                ? null
-                : () => simpleAction('YouTube Metadata saved'),
-            child: const Text('Save YouTube Metadata'),
-          ),
-
-          FilledButton(
-            onPressed: busy
-                ? null
-                : () => simpleAction('YouTube upload ready'),
-            child: const Text('6. Upload to YouTube'),
-          ),
-
-          const SizedBox(height: 10),
-
-          LinearProgressIndicator(
-            value: story == null ? 0 : 1,
-          ),
-
-          const SizedBox(height: 10),
-
-          Text(
-            status,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-
-          if (story != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              story!['title'],
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(story!['description']),
-
-            const SizedBox(height: 12),
-
-            ...scenes.asMap().entries.map((entry) {
-              final index = entry.key;
-              final scene = entry.value;
-
-              return Card(
-                margin: const EdgeInsets.only(bottom: 14),
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Scene ${index + 1}: ${scene['title']}',
-                        style: const TextStyle(
-                          fontSize: 19,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      const Text(
-                        '🎙️ Narration',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(scene['narration']!),
-
-                      const SizedBox(height: 10),
-
-                      const Text(
-                        '💬 Dialogue',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(scene['dialogue']!),
-
-                      const SizedBox(height: 10),
-
-                      const Text(
-                        '🎨 Visual Prompt',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(scene['visual']!),
-
-                      const SizedBox(height: 8),
-                      Text('🎥 Camera: ${scene['camera']}'),
-                      Text('🔊 SFX: ${scene['sfx']}'),
-                    ],
-                  ),
-                ),
-              );
-            }),
-          ],
-        ],
-      ),
+      appBar: AppBar(title: const Text('AI YouTube Studio — Phase 9.3')),
+      body: ListView(padding: const EdgeInsets.all(16), children: [
+        TextField(controller: topic, decoration: const InputDecoration(
+          labelText:'Story / Topic', hintText:'जैसे: Jai Ganesha, धोखेबाज़ भाई, बंदर और मगरमच्छ',
+          border:OutlineInputBorder())),
+        const SizedBox(height:10),
+        DropdownButtonFormField<String>(
+          value:videoType, decoration:const InputDecoration(labelText:'Video type',border:OutlineInputBorder()),
+          items:const [
+            DropdownMenuItem(value:'short',child:Text('YouTube Short — 5 Scenes')),
+            DropdownMenuItem(value:'long',child:Text('Long Video — 10 Scenes'))],
+          onChanged:busy?null:(String? v){if(v!=null)setState(()=>videoType=v);}),
+        const SizedBox(height:10),
+        DropdownButtonFormField<String>(
+          value:aspect, decoration:const InputDecoration(labelText:'Aspect ratio',border:OutlineInputBorder()),
+          items:const [DropdownMenuItem(value:'9:16',child:Text('9:16 — Shorts')),DropdownMenuItem(value:'16:9',child:Text('16:9 — YouTube'))],
+          onChanged:busy?null:(String? v){if(v!=null)setState(()=>aspect=v);}),
+        const SizedBox(height:10),
+        DropdownButtonFormField<String>(
+          value:style, decoration:const InputDecoration(labelText:'Visual style',border:OutlineInputBorder()),
+          items:const [DropdownMenuItem(value:'Cinematic 3D',child:Text('Cinematic 3D')),DropdownMenuItem(value:'Realistic',child:Text('Realistic')),DropdownMenuItem(value:'Anime',child:Text('Anime'))],
+          onChanged:busy?null:(String? v){if(v!=null)setState(()=>style=v);}),
+        const SizedBox(height:10),
+        FilledButton.icon(onPressed:busy?null:createStory,icon:const Icon(Icons.auto_awesome),label:const Text('1. Create AI Story + Dialogues')),
+        FilledButton(onPressed:busy?null:()=>feature('Images + Hindi Voice के लिए backend/API जोड़ना होगा.'),child:const Text('2. Generate Images + Hindi Voice')),
+        FilledButton(onPressed:busy?null:()=>feature('AI Thumbnail के लिए image generation backend जोड़ना होगा.'),child:const Text('3. Create AI Thumbnail')),
+        FilledButton(onPressed:busy?null:()=>feature('Final video render के लिए rendering backend जोड़ना होगा.'),child:const Text('4. Render Final Video')),
+        FilledButton(onPressed:busy?null:()=>feature('One-Click production के लिए images, voice और render backend चाहिए.'),child:const Text('⚡ One-Click: Create Complete Video')),
+        FilledButton(onPressed:busy?null:()=>feature('YouTube metadata तैयार है.'),child:const Text('Save YouTube Metadata')),
+        FilledButton(onPressed:busy?null:()=>feature('YouTube upload के लिए Google/YouTube authorization जोड़ना होगा.'),child:const Text('6. Upload to YouTube')),
+        const SizedBox(height:10),
+        LinearProgressIndicator(value:project==null?0:1),
+        const SizedBox(height:8),
+        Text(status,style:const TextStyle(fontSize:16,fontWeight:FontWeight.w600)),
+        if(project!=null) ...[
+          const SizedBox(height:12),
+          Text(project!['title'] as String,style:Theme.of(context).textTheme.headlineSmall),
+          Text(project!['description'] as String),
+          const SizedBox(height:10),
+          ...scenes.map((x) {
+            final s=x as Map<String,String>;
+            return Card(margin:const EdgeInsets.only(bottom:12),child:Padding(
+              padding:const EdgeInsets.all(14),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+                Row(children:[CircleAvatar(child:Text(s['n']??'')),const SizedBox(width:10),
+                  Expanded(child:Text('Scene ${s['n']}: ${s['title']}',style:Theme.of(context).textTheme.titleLarge))]),
+                const SizedBox(height:10),
+                const Text('🎙️ Narration',style:TextStyle(fontWeight:FontWeight.bold)),Text(s['narration']??''),
+                const SizedBox(height:8),
+                const Text('💬 Dialogues',style:TextStyle(fontWeight:FontWeight.bold)),Text(s['dialogue']??''),
+                const SizedBox(height:8),
+                const Text('👤 Characters',style:TextStyle(fontWeight:FontWeight.bold)),Text(s['characters']??''),
+                const SizedBox(height:8),
+                const Text('🎨 Visual Prompt',style:TextStyle(fontWeight:FontWeight.bold)),Text(s['visual']??''),
+                const SizedBox(height:8),
+                Text('🎥 Camera: ${s['camera']??''}'),Text('🔊 SFX: ${s['sfx']??''}')
+              ])));
+          })
+        ]
+      ]),
     );
   }
 }
