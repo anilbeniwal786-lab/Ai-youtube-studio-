@@ -1,0 +1,12 @@
+name: ai_youtube_studio
+description: AI YouTube Studio Phase 5
+publish_to: "none"
+version: 0.9.0+9
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+flutter:
+  uses-material-design: true
