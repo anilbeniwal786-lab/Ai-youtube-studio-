@@ -69,18 +69,36 @@ class _HomeState extends State<Home> {
   Future<void> createPlan() async {
     final t = topic.text.trim();
     if (t.isEmpty || busy) return;
-    setState(() { busy = true; msg = 'Creating story...'; progress = 0.15; });
 
-    final r = await _post('$base/api/project/plan', body: {
-      'topic': t, 'mode': mode, 'language': 'hi', 'style': style
+    // IMPORTANT: Create the story locally first. The UI never waits for a
+    // backend connection, so a physical phone cannot get stuck on
+    // “Creating story...”. If a backend is reachable, we try it in the
+    // background and replace the local plan with the server plan.
+    final local = _quickLocalStory(t);
+    setState(() {
+      project = local;
+      busy = false;
+      msg = 'Story ready';
+      progress = 1;
     });
 
-    if (!mounted) return;
-    if (r?.statusCode == 200) {
-      setState(() { project = jsonDecode(r!.body); msg = 'Story ready'; progress = 1; busy = false; });
-    } else {
-      // Never leave the user stuck on “Creating story...”.
-      setState(() { project = _quickLocalStory(t); msg = 'Quick story ready (backend not connected)'; progress = 1; busy = false; });
+    try {
+      final r = await _post('$base/api/project/plan', body: {
+        'topic': t, 'mode': mode, 'language': 'hi', 'style': style
+      }, timeout: const Duration(seconds: 3));
+
+      if (!mounted) return;
+      if (r?.statusCode == 200) {
+        final serverProject = jsonDecode(r!.body);
+        if (serverProject is Map<String, dynamic>) {
+          setState(() {
+            project = serverProject;
+            msg = 'AI story ready';
+          });
+        }
+      }
+    } catch (_) {
+      // Local story is already ready; silently keep it.
     }
   }
 
@@ -170,15 +188,15 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext c) {
     final scenes = (project?['scenes'] ?? []) as List;
     return Scaffold(
-      appBar: AppBar(title: const Text('AI YouTube Studio — Phase 9')),
+      appBar: AppBar(title: const Text('AI YouTube Studio — Phase 9.1')),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         TextField(controller: topic, decoration: const InputDecoration(labelText: 'Story / Topic', border: OutlineInputBorder())),
         const SizedBox(height: 12),
-        DropdownButtonFormField<String>(value: mode, decoration: const InputDecoration(labelText: 'Video type'), items: const [DropdownMenuItem(value: 'short', child: Text('YouTube Short')), DropdownMenuItem(value: 'long', child: Text('Long Video'))], onChanged: busy ? null : (String? v) { if (v != null) setState(() => mode = v); }),
+        DropdownButtonFormField(value: mode, decoration: const InputDecoration(labelText: 'Video type'), items: const [DropdownMenuItem(value: 'short', child: Text('YouTube Short')), DropdownMenuItem(value: 'long', child: Text('Long Video'))], onChanged: busy ? null : (v) => setState(() => mode = v!)),
         const SizedBox(height: 12),
-        DropdownButtonFormField<String>(value: aspect, decoration: const InputDecoration(labelText: 'Aspect ratio'), items: const [DropdownMenuItem(value: '9:16', child: Text('9:16 — Shorts')), DropdownMenuItem(value: '16:9', child: Text('16:9 — YouTube'))], onChanged: busy ? null : (String? v) { if (v != null) setState(() => aspect = v); }),
+        DropdownButtonFormField(value: aspect, decoration: const InputDecoration(labelText: 'Aspect ratio'), items: const [DropdownMenuItem(value: '9:16', child: Text('9:16 — Shorts')), DropdownMenuItem(value: '16:9', child: Text('16:9 — YouTube'))], onChanged: busy ? null : (v) => setState(() => aspect = v!)),
         const SizedBox(height: 12),
-        DropdownButtonFormField<String>(value: privacy, decoration: const InputDecoration(labelText: 'YouTube privacy'), items: const [DropdownMenuItem(value: 'private', child: Text('Private')), DropdownMenuItem(value: 'unlisted', child: Text('Unlisted')), DropdownMenuItem(value: 'public', child: Text('Public'))], onChanged: busy ? null : (String? v) { if (v != null) setState(() => privacy = v); }),
+        DropdownButtonFormField(value: privacy, decoration: const InputDecoration(labelText: 'YouTube privacy'), items: const [DropdownMenuItem(value: 'private', child: Text('Private')), DropdownMenuItem(value: 'unlisted', child: Text('Unlisted')), DropdownMenuItem(value: 'public', child: Text('Public'))], onChanged: busy ? null : (v) => setState(() => privacy = v!)),
         const SizedBox(height: 8),
         FilledButton(onPressed: busy ? null : createPlan, child: const Text('1. Create AI Story')),
         FilledButton(onPressed: busy ? null : assets, child: const Text('2. Generate Images + Hindi Voice')),
