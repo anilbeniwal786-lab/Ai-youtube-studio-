@@ -174,9 +174,13 @@ class _HomeState extends State<Home> {
       body: ListView(padding: const EdgeInsets.all(16), children: [
         TextField(controller: topic, decoration: const InputDecoration(labelText: 'Story / Topic', border: OutlineInputBorder())),
         const SizedBox(height: 12),
-        DropdownButtonFormField(value: mode, decoration: const InputDecoration(labelText: 'Video type'), items: const [DropdownMenuItem(value: 'short', child: Text('YouTube Short')), DropdownMenuItem(value: 'long', child: Text('Long Video'))], onChanged: busy ? null : (v) => setState(() => mode = v!)),
+        DropdownButtonFormField(value: mode, decoration: const InputDecoration(labelText: 'Video type'), items: const [DropdownMenuItem(value: 'short', child: Text('YouTube Short')), DropdownMenuItem(value: 'long', child: Text('Long Video'))], onChanged: busy
+    ? null
+    : (v) => setState(() => mode = v as String)),
         const SizedBox(height: 12),
-        DropdownButtonFormField(value: aspect, decoration: const InputDecoration(labelText: 'Aspect ratio'), items: const [DropdownMenuItem(value: '9:16', child: Text('9:16 — Shorts')), DropdownMenuItem(value: '16:9', child: Text('16:9 — YouTube'))], onChanged: busy ? null : (v) => setState(() => aspect = v!)),
+        DropdownButtonFormField(value: aspect, decoration: const InputDecoration(labelText: 'Aspect ratio'), items: const [DropdownMenuItem(value: '9:16', child: Text('9:16 — Shorts')), DropdownMenuItem(value: '16:9', child: Text('16:9 — YouTube'))], onChanged: busy
+    ? null
+    : (v) => setState(() => aspect = v as String)),
         const SizedBox(height: 12),
         DropdownButtonFormField(value: privacy, decoration: const InputDecoration(labelText: 'YouTube privacy'), items: const [DropdownMenuItem(value: 'private', child: Text('Private')), DropdownMenuItem(value: 'unlisted', child: Text('Unlisted')), DropdownMenuItem(value: 'public', child: Text('Public'))], onChanged: busy ? null : (v) => setState(() => privacy = v!)),
         const SizedBox(height: 8),
