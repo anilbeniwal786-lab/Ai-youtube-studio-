@@ -70,10 +70,8 @@ class _HomeState extends State<Home> {
     final t = topic.text.trim();
     if (t.isEmpty || busy) return;
 
-    // IMPORTANT: Create the story locally first. The UI never waits for a
-    // backend connection, so a physical phone cannot get stuck on
-    // “Creating story...”. If a backend is reachable, we try it in the
-    // background and replace the local plan with the server plan.
+    // Offline-first: create the story immediately. This does not wait for
+    // a backend, so it cannot get stuck on "Creating story...".
     final local = _quickLocalStory(t);
     setState(() {
       project = local;
@@ -81,25 +79,6 @@ class _HomeState extends State<Home> {
       msg = 'Story ready';
       progress = 1;
     });
-
-    try {
-      final r = await _post('$base/api/project/plan', body: {
-        'topic': t, 'mode': mode, 'language': 'hi', 'style': style
-      }, timeout: const Duration(seconds: 3));
-
-      if (!mounted) return;
-      if (r?.statusCode == 200) {
-        final serverProject = jsonDecode(r!.body);
-        if (serverProject is Map<String, dynamic>) {
-          setState(() {
-            project = serverProject;
-            msg = 'AI story ready';
-          });
-        }
-      }
-    } catch (_) {
-      // Local story is already ready; silently keep it.
-    }
   }
 
   Future<void> assets() async {
@@ -192,11 +171,11 @@ class _HomeState extends State<Home> {
       body: ListView(padding: const EdgeInsets.all(16), children: [
         TextField(controller: topic, decoration: const InputDecoration(labelText: 'Story / Topic', border: OutlineInputBorder())),
         const SizedBox(height: 12),
-        DropdownButtonFormField(value: mode, decoration: const InputDecoration(labelText: 'Video type'), items: const [DropdownMenuItem(value: 'short', child: Text('YouTube Short')), DropdownMenuItem(value: 'long', child: Text('Long Video'))], onChanged: busy ? null : (v) => setState(() => mode = v!)),
+        DropdownButtonFormField<String>(value: mode, decoration: const InputDecoration(labelText: 'Video type'), items: const [DropdownMenuItem(value: 'short', child: Text('YouTube Short')), DropdownMenuItem(value: 'long', child: Text('Long Video'))], onChanged: busy ? null : (String? v) { if (v != null) setState(() => mode = v); }),
         const SizedBox(height: 12),
-        DropdownButtonFormField(value: aspect, decoration: const InputDecoration(labelText: 'Aspect ratio'), items: const [DropdownMenuItem(value: '9:16', child: Text('9:16 — Shorts')), DropdownMenuItem(value: '16:9', child: Text('16:9 — YouTube'))], onChanged: busy ? null : (v) => setState(() => aspect = v!)),
+        DropdownButtonFormField<String>(value: aspect, decoration: const InputDecoration(labelText: 'Aspect ratio'), items: const [DropdownMenuItem(value: '9:16', child: Text('9:16 — Shorts')), DropdownMenuItem(value: '16:9', child: Text('16:9 — YouTube'))], onChanged: busy ? null : (String? v) { if (v != null) setState(() => aspect = v); }),
         const SizedBox(height: 12),
-        DropdownButtonFormField(value: privacy, decoration: const InputDecoration(labelText: 'YouTube privacy'), items: const [DropdownMenuItem(value: 'private', child: Text('Private')), DropdownMenuItem(value: 'unlisted', child: Text('Unlisted')), DropdownMenuItem(value: 'public', child: Text('Public'))], onChanged: busy ? null : (v) => setState(() => privacy = v!)),
+        DropdownButtonFormField<String>(value: privacy, decoration: const InputDecoration(labelText: 'YouTube privacy'), items: const [DropdownMenuItem(value: 'private', child: Text('Private')), DropdownMenuItem(value: 'unlisted', child: Text('Unlisted')), DropdownMenuItem(value: 'public', child: Text('Public'))], onChanged: busy ? null : (String? v) { if (v != null) setState(() => privacy = v); }),
         const SizedBox(height: 8),
         FilledButton(onPressed: busy ? null : createPlan, child: const Text('1. Create AI Story')),
         FilledButton(onPressed: busy ? null : assets, child: const Text('2. Generate Images + Hindi Voice')),
